@@ -1,5 +1,6 @@
 $("#login").show();
 $("#app").hide();
+
 // Authenticate with Dropbox
 var client = new Dropbox.Client({key: "alq5h2q2wwbqyga"});
 client.authenticate({interactive: false}, function (error) {
@@ -36,7 +37,6 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
 
     $("li").addClass("list-group-item");
 
-
     // Let users add tasks
     $("#add").on("click", function() {
         taskTable.insert({
@@ -62,6 +62,8 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
         }
         $("li").addClass("list-group-item");    
     });
+
+
 
 
 var listAppendStopWatch = function () {
@@ -167,3 +169,7 @@ listAppendStopWatch();
 addButtonGlyphs();
 });
 
+var deleteRecord = function (table, recordId) {
+  var record = table.getOrInsert(recordId);
+  record.deleteRecord();
+}
