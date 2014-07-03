@@ -27,8 +27,13 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
     var results = taskTable.query({completed: false});
 
     for (var k=0; k<results.length;k++ ) {
-        var todoElem = $("#todos").append( "<li>"+results[k].get("taskname") + "</li>");
+        var id = results[k].getId();
+        var taskname = results[k].get("taskname");
+        var listElem = "<li id='" + id +"'>" + taskname + "</li>"
+        var todoElem = $("#todos").append(listElem);
+        // var todoElem = $("#todos").append( "<li>"+results[k].get("taskname") + "</li>");
     }
+
     $("li").addClass("list-group-item");
 
 
@@ -42,6 +47,13 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
 
     });
 
+    // submit stopwatch time
+    $(".list-group-item").on("click", ".stop", function() {
+      time = $(this).prev().prev().text();
+      // var timequery = taskTable.query({title: false});
+    });
+    
+
     // As new tasks are added automatically update the task list
     datastore.recordsChanged.addListener(function (event) {
         var records = event.affectedRecordsForTable('tasks');
@@ -51,23 +63,8 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
         $("li").addClass("list-group-item");    
     });
 
-//     $(document).ready(function() {
-    
-//   var elems = document.getElementsByClassName("list-group-item");
-
-//   for (var i=0, len=elems.length; i<len; i++) {
-//     new Stopwatch(elems[i]);
-//   }
-
-//   // $('.reset').append("<span class='badge'><span class='glyphicon glyphicon-remove-sign'></span>Reset</span>");
-//   // $('.stop').append("<span class='badge'><span class='glyphicon glyphicon-stop'></span>Stop</span>");
-//   // $('.start').append("<span class='badge'><span class='glyphicon glyphicon-time'></span>Start</span>");
-
-  
-// });
 
 var listAppendStopWatch = function () {
-  // new Stopwatch(this);
   var elems = document.getElementsByClassName("list-group-item");
 
   for (var i=0, len=elems.length; i<len; i++) {
@@ -76,9 +73,6 @@ var listAppendStopWatch = function () {
 }
 
 var addButtonGlyphs = function () {
-   // var elems = document.getElementsByClassName("reset");
-   //  var elems = document.getElementsByClassName("stop");
-   //   var elems = document.getElementsByClassName("start");
   $(".reset .badge span").addClass("glyphicon glyphicon-remove");
   $(".stop .badge span").addClass("glyphicon glyphicon-stop");
   $(".start .badge span").addClass("glyphicon glyphicon-time");
