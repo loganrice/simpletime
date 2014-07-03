@@ -44,7 +44,14 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
             completed: false,
             created: new Date()
         });
+    });
 
+    // let users permantly delete tasks
+    $(".list-group-item").dblclick(function() {
+      var recordId = $(this).attr("id");
+      console.log(recordId);
+      $(this).remove();
+      deleteRecord(taskTable, recordId);
     });
 
     // submit stopwatch time
@@ -58,9 +65,12 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
     datastore.recordsChanged.addListener(function (event) {
         var records = event.affectedRecordsForTable('tasks');
         for (var k=0; k<records.length;k++ ) {
-            $("#todos").append( "<li>"+records[k].get("taskname") + "</li>");
+          var taskname = records[k].get("taskname");
+          var taskElem = "<li>" + taskname + "</li>"
+          console.log(taskElem);
+          var newTodo = $("#todos").append(taskElem);
         }
-        $("li").addClass("list-group-item");    
+        $("li").addClass("list-group-item");
     });
 
 
@@ -72,6 +82,17 @@ var listAppendStopWatch = function () {
   for (var i=0, len=elems.length; i<len; i++) {
     new Stopwatch(elems[i]);
   }
+}
+
+
+
+listAppendStopWatch();
+addButtonGlyphs();
+});
+
+var deleteRecord = function (table, recordId) {
+  var record = table.getOrInsert(recordId);
+  record.deleteRecord();
 }
 
 var addButtonGlyphs = function () {
@@ -164,12 +185,3 @@ var Stopwatch = function(elem, options) {
   this.stop  = stop;
   this.start = start;
 };
-
-listAppendStopWatch();
-addButtonGlyphs();
-});
-
-var deleteRecord = function (table, recordId) {
-  var record = table.getOrInsert(recordId);
-  record.deleteRecord();
-}
