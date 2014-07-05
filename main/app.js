@@ -15,7 +15,7 @@ if (client.isAuthenticated()) {
     $("#app").show();
 }
 
-// Bind authenticate method to your login button and listen for click on button
+// Bind authenticate method to login button and listen for click on button
 $("#login").on("click", client.authenticate());
   
 var datastoreManager = client.getDatastoreManager();
@@ -86,8 +86,7 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
           displayRecord(item.Id, item.taskname);
           
         }
-
-        // new Stopwatch($(taskElem));
+        addButtonGlyphs();
     });
 
 addButtonGlyphs();
