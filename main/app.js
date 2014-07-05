@@ -52,7 +52,6 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
         $(listElem).text(name);
         new Stopwatch(listElem);
         $("#todos").append(listElem);
-
     }
 
     // Let users add tasks
@@ -64,12 +63,11 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
         });
     });
 
-    // let users permantly delete tasks
-    $(".list-group-item").dblclick(function() {
+    $("#todos").on("dblclick", ".list-group-item", function () {
       var recordId = $(this).attr("id");
       $(this).remove();
       deleteRecord(taskTable, recordId);
-    });
+    })
 
     // submit stopwatch time
     $(".list-group-item").on("click", ".stop", function() {
@@ -98,13 +96,14 @@ var deleteRecord = function (table, recordId) {
   record.deleteRecord();
 }
 
-
+// adds special classes for bootstrap glyphs
 var addButtonGlyphs = function () {
   $(".reset .badge span").addClass("glyphicon glyphicon-remove");
   $(".stop .badge span").addClass("glyphicon glyphicon-stop");
   $(".start .badge span").addClass("glyphicon glyphicon-time");
 }
 
+// object to used create stop watch elements
 var Stopwatch = function(elem, options) {
   var timer = createTimer(),
   resetButton = createButton("reset", reset),
