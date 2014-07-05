@@ -48,11 +48,12 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
     function displayRecord(id, name) {
         var listElem = document.createElement('li');
         $(listElem).attr("id", id);
+        $(listElem).addClass("list-group-item");
         $(listElem).text(name);
+        new Stopwatch(listElem);
         $("#todos").append(listElem);
-    }
 
-    $("li").addClass("list-group-item");
+    }
 
     // Let users add tasks
     $("#add").on("click", function() {
@@ -70,45 +71,28 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
       deleteRecord(taskTable, recordId);
     });
 
-    
-
     // submit stopwatch time
     $(".list-group-item").on("click", ".stop", function() {
       time = $(this).prev().prev().text();
       // var timequery = taskTable.query({title: false});
     });
     
-
     // As new tasks are added automatically update the task list
     datastore.recordsChanged.addListener(function (event) {
-        var records = event.affectedRecordsForTable('tasks');
-        for (var k=0; k<records.length;k++ ) {
-          var taskname = records[k].get("taskname");
-          var id = records[k].getId();
-          var taskElem = document.createElement("li");
-          taskElem.text() = taskname;
-          taskElem.attr("id") = id;
-          // var taskElem = "<li id='" + id +"'>" + taskname + "</li>"
-          var newTodo = $("#todos").append(taskElem);
-          $("#"+id).addClass("list-group-item");
-          $("li").addClass("list-group-item");
+        var items = event.affectedRecordsForTable('tasks');
+        for (var k=0; k<items.length;k++ ) {
+          item = new Record(items[k])
+
+          displayRecord(item.Id, item.taskname);
+          
         }
 
-        new Stopwatch($(taskElem));
+        // new Stopwatch($(taskElem));
     });
 
-listAppendStopWatch();
 addButtonGlyphs();
 });
 
-var listAppendStopWatch = function () {
-  var elems = document.getElementsByClassName("list-group-item");
-
-  for (var i=0, len=elems.length; i<len; i++) {
-    new Stopwatch(elems[i]);
-    console.log(elems[i]);
-  }
-}
 
 var deleteRecord = function (table, recordId) {
   var record = table.getOrInsert(recordId);
