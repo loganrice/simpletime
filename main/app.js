@@ -1,5 +1,6 @@
 $("#login").show();
 $("#app").hide();
+var OOP = [];
 
 // Authenticate with Dropbox
 var client = new Dropbox.Client({key: "alq5h2q2wwbqyga"});
@@ -8,6 +9,7 @@ client.authenticate({interactive: false}, function (error) {
         alert('Authentication error: ' + error);
     }
 });
+
 if (client.isAuthenticated()) {
     $("#login").hide();
     $("#app").show();
@@ -15,8 +17,7 @@ if (client.isAuthenticated()) {
 
 // Bind authenticate method to your login button and listen for click on button
 $("#login").on("click", client.authenticate());
-
-
+  
 var datastoreManager = client.getDatastoreManager();
 datastoreManager.openDefaultDatastore(function (error, datastore) {
     if (error) {
@@ -26,13 +27,27 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
     // Let the user read all tasks by printing them to the screen
     var taskTable = datastore.getTable('tasks');
     var results = taskTable.query({completed: false});
+    
+    // Record object
+    function Record(tableRecord) {
+      this.Id = tableRecord.getId();
+      this.taskname = tableRecord.get("taskname");
+    }
 
+    var records = [] // list of Record instances
+
+    // itererate through results and add each record to array
+    // and update DOM
     for (var k=0; k<results.length;k++ ) {
-        var id = results[k].getId();
-        var taskname = results[k].get("taskname");
-        var listElem = "<li id='" + id +"'>" + taskname + "</li>"
+        var rec = new Record(results[k]);
+        records.push(rec);
+        displayRecord(rec.Id, rec.taskname);
+    }
+
+    // print records to DOM
+    function displayRecord(id, name) {
+        var listElem = "<li id='" + id +"'>" + name + "</li>"
         var todoElem = $("#todos").append(listElem);
-        // var todoElem = $("#todos").append( "<li>"+results[k].get("taskname") + "</li>");
     }
 
     $("li").addClass("list-group-item");
@@ -49,10 +64,11 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
     // let users permantly delete tasks
     $(".list-group-item").dblclick(function() {
       var recordId = $(this).attr("id");
-      console.log(recordId);
       $(this).remove();
       deleteRecord(taskTable, recordId);
     });
+
+    
 
     // submit stopwatch time
     $(".list-group-item").on("click", ".stop", function() {
@@ -66,34 +82,37 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
         var records = event.affectedRecordsForTable('tasks');
         for (var k=0; k<records.length;k++ ) {
           var taskname = records[k].get("taskname");
-          var taskElem = "<li>" + taskname + "</li>"
-          console.log(taskElem);
+          var id = records[k].getId();
+          var taskElem = document.createElement("li");
+          taskElem.text() = taskname;
+          taskElem.attr("id") = id;
+          // var taskElem = "<li id='" + id +"'>" + taskname + "</li>"
           var newTodo = $("#todos").append(taskElem);
+          $("#"+id).addClass("list-group-item");
+          $("li").addClass("list-group-item");
         }
-        $("li").addClass("list-group-item");
+
+        new Stopwatch($(taskElem));
     });
 
-
-
+listAppendStopWatch();
+addButtonGlyphs();
+});
 
 var listAppendStopWatch = function () {
   var elems = document.getElementsByClassName("list-group-item");
 
   for (var i=0, len=elems.length; i<len; i++) {
     new Stopwatch(elems[i]);
+    console.log(elems[i]);
   }
 }
-
-
-
-listAppendStopWatch();
-addButtonGlyphs();
-});
 
 var deleteRecord = function (table, recordId) {
   var record = table.getOrInsert(recordId);
   record.deleteRecord();
 }
+
 
 var addButtonGlyphs = function () {
   $(".reset .badge span").addClass("glyphicon glyphicon-remove");
