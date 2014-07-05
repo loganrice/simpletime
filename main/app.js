@@ -27,7 +27,7 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
     // Let the user read all tasks by printing them to the screen
     var taskTable = datastore.getTable('tasks');
     var results = taskTable.query({completed: false});
-    
+
     // Record object
     function Record(tableRecord) {
       this.Id = tableRecord.getId();
@@ -46,8 +46,10 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
 
     // print records to DOM
     function displayRecord(id, name) {
-        var listElem = "<li id='" + id +"'>" + name + "</li>"
-        var todoElem = $("#todos").append(listElem);
+        var listElem = document.createElement('li');
+        $(listElem).attr("id", id);
+        $(listElem).text(name);
+        $("#todos").append(listElem);
     }
 
     $("li").addClass("list-group-item");
