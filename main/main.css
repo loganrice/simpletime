@@ -1,0 +1,10 @@
+.timer {
+  margin-right: 25px;
+  margin-left: 25px;
+}
+
+.reset, .stop, .start {
+  margin-right: 5px;
+  margin-left: 5px;
+  float: right;
+}
