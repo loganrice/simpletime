@@ -33,14 +33,23 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
       this.Id = tableRecord.getId();
       this.taskname = tableRecord.get("taskname");
       this.seconds = tableRecord.get("seconds");
+      // finds itself in records array, useful for addlistener
+      this.arrayIndex = function() {
+        for( var i = 0; i < records.length; i++){
+          if (records[i].Id == this.Id) {
+            return i;
+          } else {
+            return false;
+          }
+        }
+      }
       this.update = function(field, value) {
         tableRecord.set('seconds', value);
-      }
+      };
     }
     records = [] // list of Record instances
 
     $("#todos").on("click", ".stop", function(event){
-      event.preventDefault();
       var time = $(this).siblings(".timer").text();
       var id = $(this).parent().attr("id");
       var found = false;
@@ -88,20 +97,22 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
       deleteRecord(taskTable, recordId);
     })
 
-    // submit stopwatch time
-    $(".list-group-item").on("click", ".stop", function() {
-      time = $(this).prev().prev().text();
-      // var timequery = taskTable.query({title: false});
-    });
     
     // As new tasks are added automatically update the task list
     datastore.recordsChanged.addListener(function (event) {
         var items = event.affectedRecordsForTable('tasks');
         for (var k=0; k<items.length;k++ ) {
-          item = new Record(items[k])
-
-          displayRecord(item.Id, item.taskname);
-          
+          // if the item does not exist
+          // add the new item to DOM else
+          // update the time 
+          var item = new Record(items[k])
+          var timerElem = $("#"+item.Id + " .timer");
+          console.log(item.arrayIndex());
+          if (item.arrayIndex() == false ) {
+            displayRecord(item.Id, item.taskname);
+          } else {
+            timerElem.text(item.seconds);
+          }
         }
         addButtonGlyphs();
     });
@@ -158,7 +169,6 @@ var Stopwatch = function(elem, options) {
     $(a).addClass(action);
 
     $(a).append("<span class='badge'><span>" + "<em>" + action + "</em></span></span>");
-    // a.innerHTML = action;
     a.addEventListener("click", function(event) {
       handler();
       // event.preventDefault();
@@ -168,7 +178,7 @@ var Stopwatch = function(elem, options) {
 
   function start() {
     if (!interval) {
-      offset = Date.now();
+      offset = Date.now(); 
       interval = setInterval(update, options.delay);
     }
   }
@@ -197,7 +207,6 @@ var Stopwatch = function(elem, options) {
   function delta() {
     var now = Date.now(),
           d = now - offset;
-
      offset = now;
      return d;
   }

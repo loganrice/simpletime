@@ -14,5 +14,6 @@
 }
 
 #app {
-  width: 755 px;
+  max-width: 755px;
+  margin: auto;
 }
