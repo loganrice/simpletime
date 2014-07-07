@@ -8,3 +8,11 @@
   margin-left: 5px;
   float: right;
 }
+
+.badge:hover {
+  opacity: .8;
+}
+
+#app {
+  width: 755 px;
+}

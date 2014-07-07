@@ -1,7 +1,7 @@
 $("#login").show();
 $("#app").hide();
 var OOP = [];
-
+var records;
 // Authenticate with Dropbox
 var client = new Dropbox.Client({key: "alq5h2q2wwbqyga"});
 client.authenticate({interactive: false}, function (error) {
@@ -32,25 +32,43 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
     function Record(tableRecord) {
       this.Id = tableRecord.getId();
       this.taskname = tableRecord.get("taskname");
+      this.seconds = tableRecord.get("seconds");
+      this.update = function(field, value) {
+        tableRecord.set('seconds', value);
+      }
     }
+    records = [] // list of Record instances
 
-    var records = [] // list of Record instances
+    $("#todos").on("click", ".stop", function(event){
+      event.preventDefault();
+      var time = $(this).siblings(".timer").text();
+      var id = $(this).parent().attr("id");
+      var found = false;
+      for( var i = 0; i < records.length; i++){
+        if (records[i].Id == id) {
+          found = true;
+          records[i].update('seconds', time);
+          break;
+        }
+      }
+    })
 
     // itererate through results and add each record to array
     // and update DOM
     for (var k=0; k<results.length;k++ ) {
         var rec = new Record(results[k]);
         records.push(rec);
-        displayRecord(rec.Id, rec.taskname);
+        displayRecord(rec.Id, rec.taskname, rec.seconds);
     }
 
     // print records to DOM
-    function displayRecord(id, name) {
+    function displayRecord(id, name, time) {
         var listElem = document.createElement('li');
         $(listElem).attr("id", id);
         $(listElem).addClass("list-group-item");
         $(listElem).text(name);
         new Stopwatch(listElem);
+        $(listElem).children(".timer").text(time);
         $("#todos").append(listElem);
     }
 
@@ -59,7 +77,8 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
         taskTable.insert({
             taskname: $("#newTask").val(),
             completed: false,
-            created: new Date()
+            created: new Date(),
+            seconds: 0
         });
     });
 
