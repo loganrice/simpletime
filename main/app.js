@@ -35,13 +35,15 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
       this.seconds = tableRecord.get("seconds");
       // finds itself in records array, useful for addlistener
       this.arrayIndex = function() {
+        var found = false;
         for( var i = 0; i < records.length; i++){
           if (records[i].Id == this.Id) {
-            return i;
+            found = i;
           } else {
-            return false;
+            found = false;
           }
         }
+        return found;
       }
       this.update = function(field, value) {
         tableRecord.set('seconds', value);
@@ -53,6 +55,7 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
       var time = $(this).siblings(".timer").text();
       var id = $(this).parent().attr("id");
       var found = false;
+      console.log(time + " " + id);
       for( var i = 0; i < records.length; i++){
         if (records[i].Id == id) {
           found = true;
@@ -60,7 +63,7 @@ datastoreManager.openDefaultDatastore(function (error, datastore) {
           break;
         }
       }
-    })
+    });
 
     // itererate through results and add each record to array
     // and update DOM
