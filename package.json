@@ -1,0 +1,27 @@
+{
+  "name": "simpletime",
+  "version": "0.0.0",
+  "description": "An api project for thinkful",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webbushka/simpletime.git"
+  },
+  "author": "Logan Rice",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/loganrice/simpletime/issues"
+  },
+  "homepage": "https://github.com/loganrice/simpletime",
+  "dependencies": {
+    "express": "~3.4.*"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.*",
+    "grunt-express": "~1.2.*",
+    "load-grunt-config": "~0.8.*"
+  }
+}
